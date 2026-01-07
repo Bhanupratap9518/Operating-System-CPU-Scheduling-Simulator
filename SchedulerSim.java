@@ -1,25 +1,72 @@
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Scanner;
 
 public class SchedulerSim {
-	/**
-	 * Reads process file, writes to an array, passes to Scheduler that then runs.
-	 * Prints relevant metric information.
-	 * Amend to run different schedulers and determine necessary evaluation outcomes.
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-	//	Process[] p = {new Process(1, 18, 0, 10), new Process(2, 5, 2, 2), new Process(3, 6, 3, 1)};
 
-		ProcessReader pr = new ProcessReader();
-		Process []  pa = pr.readProcesses("Processes.txt");
-		Scheduler scheduler = new RR(pa,20);
-		scheduler.runScheduler();
-		System.out.println("Average wait time = " + scheduler.calculateAverageWaitTime());
-		System.out.println("Average turnaround time = " + scheduler.calculateAverageTurnaroundTime());
-		System.out.println("Total Run time = " + scheduler.getRuntime());
-//		System.out.println("CPU Load= " + scheduler.getProcessorUsage(scheduler.getRuntime()));
-	}
-	
+    public static void main(String[] args) throws IOException {
+
+        Scanner sc = new Scanner(System.in);
+        int repeat = 1;
+
+        while (repeat == 1) {
+
+            // Step 1: Read the file
+            ProcessReader pr = new ProcessReader();
+            Process[] pa = pr.readProcesses("Processes.txt");
+
+            System.out.println("\n================ CPU Scheduling Simulator ================");
+            System.out.println("Select the Scheduling Algorithm:");
+            System.out.println("1. FCFS (First Come First Serve)");
+            System.out.println("2. SRTF (Shortest Remaining Time First)");
+            System.out.println("3. Priority Scheduling");
+            System.out.println("4. Round Robin");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+
+            Scheduler scheduler = null;
+
+            switch (choice) {
+                case 1:
+                    scheduler = new FCFS(pa);
+                    break;
+
+                case 2:
+                    scheduler = new SRTF(pa);
+                    break;
+
+                case 3:
+                    scheduler = new Priority_Scheduling(pa);
+                    break;
+
+                case 4:
+                    System.out.print("Enter Time Quantum: ");
+                    int tq = sc.nextInt();
+                    scheduler = new RR(pa, tq);
+                    break;
+
+                default:
+                    System.out.println("Invalid choice! Defaulting to FCFS.");
+                    scheduler = new FCFS(pa);
+            }
+
+            // Step 2: Run the scheduler
+            System.out.println("\nRunning Scheduler...\n");
+            scheduler.runScheduler();
+
+            // Step 3: Print Results
+            System.out.println("Average wait time = " + scheduler.calculateAverageWaitTime());
+            System.out.println("Average turnaround time = " + scheduler.calculateAverageTurnaroundTime());
+            System.out.println("Total Run time = " + scheduler.getRuntime());
+
+            // Step 4: Ask user to run again
+            System.out.println("\nDo you want to run again?");
+            System.out.println("1. Yes");
+            System.out.println("0. No (Exit)");
+            System.out.print("Enter choice: ");
+
+            repeat = sc.nextInt();
+        }
+
+        System.out.println("\nExiting CPU Scheduling Simulator. Goodbye!");
+    }
 }
